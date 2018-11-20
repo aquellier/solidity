@@ -7,7 +7,6 @@ const Web3 = require('web3');
 // As soon as we deploy our contract to a test network, we'll replace
 // ganache with whatever provider is appropriate
 const web3 = new Web3(ganache.provider());
-
 // Next we can require in our interface which is the API
 // of our contract and the byte code which is the
 // raw compiled contract from our compile file.
@@ -118,17 +117,10 @@ describe('Lottery Contract', () => {
       from: accounts[0],
       value: web3.utils.toWei('2', 'ether')
     });
-
     const initialBalance = await web3.eth.getBalance(accounts[0]);
-
-    await lottery.methods.pickWinner().send({
-      from: accounts[0]
-    });
-
+    await lottery.methods.pickWinner().send({ from: accounts[0] });
     const finalBalance = await web3.eth.getBalance(accounts[0]);
-
     const difference = finalBalance - initialBalance;
-    console.log(finalBalance - initialBalance);
     assert(difference > web3.utils.toWei('1.8', 'ether'));
   });
 });
