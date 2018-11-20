@@ -21,13 +21,62 @@ beforeEach(async () => {
   // Accessing ethereum module to get accounts
   accounts = await web3.eth.getAccounts();
   // We also need to deploy an instance of our lottery contract
-  lottery = await web3.eth.Contract(JSON.parse(interface))
+  lottery = await new web3.eth.Contract(JSON.parse(interface))
     .deploy({ data: bytecode })
-  .send({ from: account[0], gas: '1000000'});
+    .send({ from: accounts[0], gas: '1000000'});
 });
 
+// Great question: what tests should we write?
+// What behavior do we care about?
+// In this contract I want to make that if anyone calls enter
+// with the correct aount of money their address gets added to
+// the players array
 describe('Lottery Contract', () => {
   it('deploys a contract', () => {
     assert.ok(lottery.options.address)
+  });
+
+  it('allows one account to enter', async () => {
+    await lottery.methods.enter().send({
+      from: accounts[0],
+      // conversion method inclued in web3
+      value: web3.utils.toWei('0.02', 'ether')
+    });
+
+    const players = await lottery.methods.getPlayers().call({
+      from: accounts[0]
+    });
+
+    assert.equal(accounts[0], players[0]);
+    assert.equal(1, players.length);
+  });
+
+  it('allows multiple accounts to enter', async () => {
+    await lottery.methods.enter().send({
+      from: accounts[0],
+      // conversion method inclued in web3
+      value: web3.utils.toWei('0.02', 'ether')
+    });
+
+    await lottery.methods.enter().send({
+      from: accounts[1],
+      // conversion method inclued in web3
+      value: web3.utils.toWei('0.02', 'ether')
+    });
+
+    await lottery.methods.enter().send({
+      from: accounts[2],
+      // conversion method inclued in web3
+      value: web3.utils.toWei('0.02', 'ether')
+    });
+
+    const players = await lottery.methods.getPlayers().call({
+      from: accounts[0]
+    });
+
+    assert.equal(accounts[0], players[0]);
+    assert.equal(accounts[1], players[1]);
+    assert.equal(accounts[2], players[2]);
+    assert.equal(3, players.length);
   });
 });
