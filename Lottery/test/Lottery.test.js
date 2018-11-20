@@ -79,4 +79,21 @@ describe('Lottery Contract', () => {
     assert.equal(accounts[2], players[2]);
     assert.equal(3, players.length);
   });
+
+  it('requires a minimum amount of ether to enter', async () => {
+    // We catch our error in the async function by using try and catch
+    try {
+      await lottery.methods.enter().send({
+        from: accounts[0],
+        value: 10
+      });
+      // if the asynchronous is executed and no error is thrown
+      // execution will go to next line of code and assert false
+      // and the test will fail no matter what. This way we can be
+      // sure that everythings fine if the test passes.
+      assert(false);
+    } catch (err) {
+      assert(err);
+    }
+  });
 });
