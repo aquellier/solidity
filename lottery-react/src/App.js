@@ -2,28 +2,46 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import web3 from './web3';
+import lottery from './lottery';
+
+// Flow
+// 1. Our App is going to be load up
+// 2. The app content is rendered to the screen
+// 3. That will cause the render method to immediately be called
+// which puts the jsx on the screen
+// 4. During this initial render, this.state.manager has a value of ''
+// 5. After that the componentDidMount will run
+// 6. We will make a call to the network to retrieve the current state
+// of the lottery contract, i.e the manager address
+// 7. We set that state to our component
+// 8. This causes it to automatically rerender
+// 9. The render method is called again with the new value of this.state.manager
 
 class App extends Component {
+
+  // we are replacing the constructor method with the following
+  // because the only reason we were calling it at the beginning
+  // was to initate this state
+  // Underneath the hood,
+  // Variables declared here are automatically put inside the constructor
+  state = {
+    manager: ''
+  };
+
+  async componentDidMount() {
+    // whenever we make use of Metadask provider we do not have to specify
+    // from account it's coming in the call function because it has a default
+    // account already set up, the first one we are signed into inside MM
+    const manager = await lottery.methods.manager().call();
+
+    this.setState({ manager });
+  }
   render() {
-    console.log(web3.version)
-    web3.eth.getAccounts()
-      .then(console.log);
+    console.log(web3.version);
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <div>
+        <h2>Lottery Contract</h2>
+        <p>This contract is managed by {this.state.manager}</p>
       </div>
     );
   }
