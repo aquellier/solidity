@@ -46,6 +46,26 @@ class App extends Component {
 
     this.setState({ manager, players, balance });
   }
+
+  // Arrow function, this way the value of this will automatically be our component
+  // Otherwise we would have to use bind(this)
+  onSubmit = async (event) => {
+    // Whenever onSubmit get called, it will be with an event object
+    // representing the form submission
+    // We want to make sure the form does not submit itself in the classic HTML way
+    // That is why we use preventDefault
+    event.preventDefault();
+    // Code to send a transaction to this function, asynchronous
+    // When we send transactions we have to specify the account
+    const accounts = await web3.eth.getAccounts();
+    // Let us assume that the first is the one sending the money
+    await lottery.methods.enter.send({
+      from: accounts[0],
+      value: web3.utils.toWei(this.state.value, 'ether')
+    });
+    // This process will take 15 30 seconds so we should give feedback to our user
+  };
+
   render() {
     console.log(web3.version);
     // We convert value in Wei to value in Ether
@@ -59,7 +79,7 @@ class App extends Component {
 
         <hr />
 
-        <form>
+        <form onSubmit={this.onSubmit}>
           <h4>Want to try your luck?</h4>
           <div>
             <label htmlFor="">Amount of ether to enter:</label>
