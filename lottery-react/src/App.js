@@ -29,7 +29,8 @@ class App extends Component {
     players: [],
     // See farther why balance is initialized as a string (line 43)
     balance: '',
-    value: ''
+    value: '',
+    message: ''
   };
 
   // This component is a great pattern for fetching information off of our contract
@@ -49,7 +50,7 @@ class App extends Component {
 
   // Arrow function, this way the value of this will automatically be our component
   // Otherwise we would have to use bind(this)
-  onSubmit = async (event) => {
+  onSubmit = async event => {
     // Whenever onSubmit get called, it will be with an event object
     // representing the form submission
     // We want to make sure the form does not submit itself in the classic HTML way
@@ -58,12 +59,14 @@ class App extends Component {
     // Code to send a transaction to this function, asynchronous
     // When we send transactions we have to specify the account
     const accounts = await web3.eth.getAccounts();
+    // This process will take 15 30 seconds so we should give feedback to our user
+    this.setState({ message: 'Waiting on transaction success...'});
     // Let us assume that the first is the one sending the money
-    await lottery.methods.enter.send({
+    await lottery.methods.enter().send({
       from: accounts[0],
       value: web3.utils.toWei(this.state.value, 'ether')
     });
-    // This process will take 15 30 seconds so we should give feedback to our user
+    this.setState({message: 'You have been entered'});
   };
 
   render() {
@@ -90,6 +93,10 @@ class App extends Component {
           </div>
           <button>Enter</button>
         </form>
+
+        <hr/>
+
+        <h1>{this.state.message}</h1>
       </div>
     );
   }
