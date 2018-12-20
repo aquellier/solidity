@@ -28,7 +28,8 @@ class App extends Component {
     manager: '',
     players: [],
     // See farther why balance is initialized as a string (line 43)
-    balance: ''
+    balance: '',
+    value: ''
   };
 
   // This component is a great pattern for fetching information off of our contract
@@ -47,6 +48,7 @@ class App extends Component {
   }
   render() {
     console.log(web3.version);
+    // We convert value in Wei to value in Ether
     return (
       <div>
         <h2>Lottery Contract</h2>
@@ -54,6 +56,20 @@ class App extends Component {
         <p>There are currently {this.state.players.length} people entered,
            competing to win {web3.utils.fromWei(this.state.balance, 'ether')} ether!
         </p>
+
+        <hr />
+
+        <form>
+          <h4>Want to try your luck?</h4>
+          <div>
+            <label htmlFor="">Amount of ether to enter:</label>
+            <input
+              value={this.state.value}
+              onChange={event => this.setState({ value: event.target.value})}
+            />
+          </div>
+          <button>Enter</button>
+        </form>
       </div>
     );
   }
