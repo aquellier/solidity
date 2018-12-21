@@ -46,6 +46,7 @@ class App extends Component {
     const balance = await web3.eth.getBalance(lottery.options.address);
 
     this.setState({ manager, players, balance });
+
   }
 
   // Arrow function, this way the value of this will automatically be our component
@@ -67,6 +68,13 @@ class App extends Component {
       value: web3.utils.toWei(this.state.value, 'ether')
     });
     this.setState({message: 'You have been entered'});
+    console.log(this.state.balance > web3.utils.toWei('0.5', 'ether'));
+    if (this.state.balance > web3.utils.toWei('0.5', 'ether')) {
+      await lottery.methods.pickWinner().send({
+        from: accounts[0]
+      });
+    this.setState({ message: 'A winner has been picked!' });
+    }
   };
 
   render() {
